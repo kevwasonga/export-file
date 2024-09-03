@@ -1,0 +1,175 @@
+body {
+    background-color: #13797c; /* Teal background for a calming effect */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; /* Keep content aligned at the top */
+    min-height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+form {
+    background: rgb(87, 83, 83); /* Dark grey background for contrast */
+    padding: 10px; /* Padding around the form */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Shadow for depth */
+    max-width: 600px; /* Maximum width of the form */
+    width: 100%; /* Full width */
+    z-index: 1; /* Ensure form is above the result */
+    margin-top: 0px; /* Reduced margin to push form closer to h1 */
+}
+
+textarea {
+    width: 100%; /* Full width of the parent container */
+    height: 100px; /* Reduced height for the textarea */
+    resize: none; /* Prevent resizing */
+    overflow: auto; /* Show scrollbars when needed */
+    padding: 5px; /* Reduced padding for a more compact look */
+    border: 1px solid #cccccc; /* Light border for definition */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 14px; /* Slightly smaller font size for compactness */
+    box-sizing: border-box; /* Include padding and border in width/height */
+    margin-top: 5px; /* Space above the textarea */
+}
+
+#result {
+    font-family: monospace;
+    white-space: pre;
+    margin-top: 20px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 400px;
+    overflow-y: auto;
+    width: 100%;
+    max-width: 600px;
+}
+
+h1 {
+    width: 100%;
+    background: rgb(87, 83, 83);
+    text-align: center;
+    padding: 10px;
+    font-family: 'Impact', 'Arial Black', 'Arial Bold', sans-serif;
+    font-size: 5rem;
+    color: wheat; /* Softer white */
+    margin-bottom: 10px; 
+
+    
+    margin-top: 0px; /* Reduced margin to push h1 closer to the form */
+}
+
+h2 {
+    font-family: 'Impact', 'Arial Black', 'Arial Bold', sans-serif;
+    font-size: 2rem;
+    color: wheat;  
+    margin-top: 0px; /* Reduced margin to push h1 closer to the form */
+    margin-bottom: 0px; 
+}
+
+p {
+    font-family: 'Arial', sans-serif;
+    font-size: 1.2rem;
+    color: wheat;
+    display: block;
+    margin-bottom: 0.5rem;
+   
+}
+
+.button-group {
+    display: flex; /* Align buttons in a row */
+    justify-content: center; /* Center buttons horizontally */
+    margin-bottom: 5px; /* Space between button group and generate button */
+}
+
+.button-group button {
+    padding: 5px 5px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+ 
+    
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s, box-shadow 0.2s; /* Include box-shadow in transition */
+    font-size: 16px; /* Increase font size for better accessibility */
+}
+
+.button-group button.clicked {
+    background-color: #0056b3; /* Darker color when clicked */
+    transform: translateY(2px); /* Slightly move down */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Subtle shadow on click */
+}
+
+.button-group button:hover {
+    background-color: #0056b3; /* Darker hover color */
+    transform: scale(1.05); /* Slightly enlarge the button on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow on hover for depth */
+}
+
+#generateBtn {
+    padding: 10px 10px;
+    margin-top: 10px; /* Space above the generate button */
+    justify-content: center;
+    border: none;
+    border-radius: 5px;
+    background-color: #0056b3;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.1s, background-color 0.2s, box-shadow 0.2s; /* Include box-shadow in transition */
+   
+}
+
+#generateBtn:hover {
+    background-color: #227bce; /* Darker green on hover */
+    transform: scale(1.05); /* Slightly enlarge the button on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Shadow on hover for depth */
+}
+
+.container {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 3 4px 6px rgba(4, 88, 81, 0.1);
+}
+
+h2 {
+    color: #e74c3c;
+    font-size: 4rem;
+    margin-bottom: 0;
+}
+
+h4 {
+    font-size: 1.2rem;
+    color: #34495e;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.lost-astronaut {
+    width: 200px;
+    height: 200px;
+    margin: 2rem 0;
+}
+
+.btn:hover {
+    background-color: #2980b9;
+}
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
