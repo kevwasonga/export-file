@@ -27,9 +27,10 @@ func main() {
 		return
 	}
 
-	url := ":8080"
+	url := ":8084"
 
 	http.HandleFunc("/", pathHandler)
+	http.HandleFunc("/download", downloadHandler)
 	http.HandleFunc("/ascii-art", asciiArtHandler)
 	http.HandleFunc("/error", errorHandler)
 
@@ -73,53 +74,85 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		tmpl, _ := template.ParseFiles("./static/errors.html")
-		tmpl.ExecuteTemplate(w, "errors.html", Error{405, "Method Not allowed"})
-		return
-	}
+func generateASCIIArtResponse(w http.ResponseWriter, r *http.Request) (string, error) {
+	if r.Method == http.MethodPost {
+		// Struct for decoding JSON input
+		var request struct {
+			Banner string `json:"banner"`
+			Input  string `json:"input"`
+		}
 
-	var request struct {
-		Banner     string `json:"banner"`
-		Input      string `json:"input"`
-		SaveToFile bool   `json:"saveToFile"` // New field to indicate whether to save to file
-	}
-	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		http.Redirect(w, r, "/error", http.StatusFound)
-		return
-	}
+		// Decode the request body
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			return "", err
+		}
 
-	fileName := asciiArt.BannerFile(request.Banner)
+		return processASCIIArt(w, request.Banner, request.Input)
+	} else if r.Method == http.MethodGet {
+		// Handle GET request: extract query parameters
+		banner := r.URL.Query().Get("banner")
+		input := r.URL.Query().Get("input")
 
+		if banner == "" || input == "" {
+			return "", fmt.Errorf("missing banner or input parameters")
+		}
+
+		return processASCIIArt(w, banner, input)
+	}
+	return "", fmt.Errorf("Method Not Allowed")
+}
+
+func processASCIIArt(w http.ResponseWriter, banner, input string) (string, error) {
+	// Load the appropriate banner file
+	fileName := asciiArt.BannerFile(banner)
 	bannerMap, err := asciiArt.LoadBannerMap(w, fileName)
+	if err != nil {
+		return "", err
+	}
+
+	// Generate the ASCII art
+	return generateASCIIArt(w, input, bannerMap)
+}
+
+func asciiArtHandler(w http.ResponseWriter, r *http.Request) {
+	// Call the function to generate ASCII art
+	response, err := generateASCIIArtResponse(w, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		http.Redirect(w, r, "/error", http.StatusInternalServerError)
 		return
 	}
 
-	response, httpErr := generateASCIIArt(w, request.Input, bannerMap)
-	if httpErr != nil {
-		return
-	}
-
-	if request.SaveToFile {
-		// Save the response to a file
-		err := saveToFile(response, "output.txt")
-		if err != nil {
-			log.Println("Failed to save ASCII art to file:", err)
-		}
-	}
-
+	// Set content type and write response
 	w.Header().Set("Content-Type", "text/plain")
 	w.Write([]byte(response))
 }
 
-func saveToFile(data string, filename string) error {
-	return os.WriteFile(filename, []byte(data), 0o644)
+func downloadHandler(w http.ResponseWriter, r *http.Request) {
+	// Allow the download to be handled with GET requests
+	if r.Method != http.MethodGet {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		tmpl, _ := template.ParseFiles("./static/errors.html")
+		tmpl.ExecuteTemplate(w, "errors.html", Error{405, "Method Not Allowed"})
+		return
+	}
+
+	// Generate ASCII art using a helper function
+	asciiArt, err := generateASCIIArtResponse(w, r)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		tmpl, _ := template.ParseFiles("./static/errors.html")
+		tmpl.ExecuteTemplate(w, "errors.html", Error{500, "Internal Server Error"})
+		return
+	}
+
+	// Set headers for file download
+	fileName := "ascii_art.txt"
+	w.Header().Set("Content-Disposition", "attachment; filename="+fileName)
+	w.Header().Set("Content-Type", "text/plain")
+
+	// Write ASCII art to the response
+	w.Write([]byte(asciiArt))
 }
 
 // generateASCIIArt generates the ASCII art from input and bannerMap.
