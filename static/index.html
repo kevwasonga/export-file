@@ -10,9 +10,6 @@
             font-family: monospace;
             white-space: pre;
         }
-        .active {
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
@@ -26,20 +23,17 @@
             <button type="button" id="shadowBtn">Shadow</button>
             <button type="button" id="thinkertoyBtn">Thinkertoy</button>        
         </div>
-        <button type="button" id="generateBtn">Generate ASCII Art</button>
-        <p> </p>
-
-    <button type="button" id="exportBtn">Export to Generated Ascii</button>
-        
+        <div class="button-generate">
+            <button type="button" id="generateBtn">Generate ASCII Art</button>
+        </div>
+        <!-- Download Button -->
+        <div class="button-download">
+            <button type="button" id="downloadBtn">Download ASCII Art</button>
+        </div>
     </form>
     <p>Output:</p>
     <div id="result"></div>
-
-
-
     <script>
-        let generatedArt = ''; // Variable to store generated ASCII art
-
         async function generateASCIIArt(banner) {
             const inputText = document.getElementById('inputText').value;
             const response = await fetch('/ascii-art', {
@@ -47,11 +41,7 @@
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    banner: banner, 
-                    input: inputText,
-                    saveToFile: false  // Request to not save to file on server
-                })
+                body: JSON.stringify({ banner: banner, input: inputText })
             })
             .then(result => {
                 if (!result.ok) {
@@ -66,10 +56,17 @@
                 } else {
                     return result;
                 }
-            });
-            const resultText = await response.text();
-            document.getElementById('result').textContent = resultText;
-            generatedArt = resultText; // Store generated art for export
+            })
+            const result = await response.text();
+            document.getElementById('result').textContent = result;
+        }
+
+        async function downloadASCIIArt(banner) {
+            const inputText = document.getElementById('inputText').value;
+
+            // Redirect to download endpoint with query parameters
+            const url = `/download?banner=${banner}&input=${encodeURIComponent(inputText)}`;
+            window.location.href = url;  // This will trigger the download
         }
 
         document.getElementById('standardBtn').addEventListener('click', function () {
@@ -106,20 +103,10 @@
             generateASCIIArt(selectedStyle);
         });
 
-        document.getElementById('exportBtn').addEventListener('click', function () {
-            if (generatedArt) {
-                const blob = new Blob([generatedArt], { type: 'text/plain' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'ascii-art.txt';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            } else {
-                alert('No ASCII art generated to export.');
-            }
+        document.getElementById('downloadBtn').addEventListener('click', function () {
+            // Call the downloadASCIIArt function with the selected style
+            var selectedStyle = document.querySelector('button.active').id.replace('Btn', '');
+            downloadASCIIArt(selectedStyle);
         });
     </script>
 </body>
